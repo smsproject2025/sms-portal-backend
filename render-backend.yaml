@@ -1,0 +1,123 @@
+# render-backend.yaml
+# Render Blueprint — Backend only (no frontend)
+#
+# Place this file at the ROOT of your repository as: render.yaml
+#
+# Deploy:
+#   1. Push this file + your code to GitHub
+#   2. Go to https://dashboard.render.com/new/blueprint
+#   3. Connect your repo → Render reads this file and creates all services
+#
+# Services created:
+#   - smsportal-backend  (Spring Boot API — Docker)
+#   - smsportal-db       (PostgreSQL database)
+#   - smsportal-redis    (Redis cache)
+
+databases:
+  # ── PostgreSQL ────────────────────────────────────────────────────────
+  - name: smsportal-db
+    databaseName: smsportal
+    user: smsportal
+    plan: free                  # Free: 1GB, expires after 90 days
+    # plan: starter             # $7/month: no expiry, 1GB, recommended for production
+
+  # ── Redis ─────────────────────────────────────────────────────────────
+  - name: smsportal-redis
+    plan: free                  # Free: 25MB RAM
+    # plan: starter             # $10/month: 100MB, persistence enabled
+
+services:
+  # ── Spring Boot Backend ───────────────────────────────────────────────
+  - type: web
+    name: smsportal-backend
+    runtime: docker
+    rootDir: .                  # Change to smsportal-backend/ if your repo has subfolders
+    dockerfilePath: ./Dockerfile
+    plan: free                  # Free: 512MB RAM, 0.1 CPU, spins down after 15min inactivity
+    # plan: starter             # $7/month: always on, 512MB RAM — use for production
+
+    # Render checks this endpoint to know your app is healthy
+    healthCheckPath: /actuator/health
+
+    envVars:
+      # ── Server ───────────────────────────────────────────────────────
+      - key: PORT
+        value: 8080
+      - key: SPRING_PROFILES_ACTIVE
+        value: render
+
+      # ── Database (auto-filled from the smsportal-db above) ───────────
+      - key: DATABASE_URL
+        fromDatabase:
+          name: smsportal-db
+          property: connectionString
+
+      # ── Redis (auto-filled from smsportal-redis above) ───────────────
+      - key: REDIS_URL
+        fromService:
+          name: smsportal-redis
+          type: redis
+          property: connectionString
+
+      # ── Secrets (you enter these in Render Dashboard) ─────────────────
+      # All sync:false variables will be prompted when you apply the blueprint
+
+      - key: JWT_SECRET
+        sync: false             # Run: openssl rand -hex 32
+
+      - key: JWT_EXPIRATION
+        value: "86400000"       # 24 hours in ms
+
+      - key: JWT_REFRESH_EXPIRATION
+        value: "604800000"      # 7 days in ms
+
+      # RabbitMQ — get free URL from https://cloudamqp.com (Little Lemur plan)
+      - key: RABBITMQ_URL
+        sync: false             # Format: amqps://user:pass@whale.rmq2.cloudamqp.com/vhost
+
+      # Email — Gmail App Password (NOT your real Gmail password)
+      - key: MAIL_USERNAME
+        sync: false             # your-email@gmail.com
+
+      - key: MAIL_PASSWORD
+        sync: false             # 16-char Gmail App Password
+
+      # SMS Gateway
+      - key: MSG91_AUTH_KEY
+        sync: false             # From https://msg91.com → API Keys
+
+      - key: MSG91_SENDER_ID
+        value: SMSPTL
+
+      # Payments
+      - key: RAZORPAY_KEY_ID
+        sync: false             # From https://dashboard.razorpay.com → Settings → API Keys
+
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+
+      # WhatsApp (optional — set WHATSAPP_MOCK=true to skip)
+      - key: WHATSAPP_ACCESS_TOKEN
+        sync: false
+
+      - key: WHATSAPP_PHONE_NUMBER_ID
+        sync: false
+
+      - key: WHATSAPP_WEBHOOK_VERIFY_TOKEN
+        sync: false             # Any random string you choose
+
+      - key: WHATSAPP_MOCK
+        value: "true"           # Change to false when real credentials are set
+
+      # App settings
+      - key: FRONTEND_URL
+        value: https://your-frontend-domain.com    # Update with your actual frontend URL
+
+      - key: CORS_ORIGINS
+        value: https://your-frontend-domain.com    # Same as FRONTEND_URL
+
+      - key: APP_NAME
+        value: SMSPortal
+
+      - key: SMS_GATEWAY
+        value: msg91

@@ -1,0 +1,98 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/smsportal?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    show-sql: false
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+
+  redis:
+    host: localhost
+    port: 6379
+    timeout: 2000ms
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+
+  mail:
+    host: smtp.zoho.in
+    port: 587
+    username: contact@laptechs.in
+    password: US6C43GRMf4e
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+
+  logging:
+    level:
+      org.springframework.mail: DEBUG
+      jakarta.mail: DEBUG
+      org:
+        eclipse:
+          angus:
+            mail: TRACE
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+jwt:
+  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+  expiration: 86400000
+  refresh-expiration: 604800000
+
+twilio:
+  account-sid: ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+  auth-token: your_twilio_auth_token
+  from-number: +1234567890
+
+msg91:
+  auth-key: your_msg91_auth_key
+  sender-id: SMSPTL
+
+razorpay:
+  key-id: rzp_test_xxxxxxxxxxxxxxxx
+  key-secret: your_razorpay_key_secret
+
+app:
+  sms-rate-promotional: 0.15
+  sms-rate-transactional: 0.25
+  sms-rate-otp: 0.20
+  whatsapp-rate-text: 0.40
+  whatsapp-rate-template: 0.55
+  whatsapp-rate-media: 0.60
+  gateway: msg91
+  cors-origins: http://localhost:4200
+
+whatsapp:
+  access-token: EAAdHzVP0SZCQBRmzvKjyOzfG0KCx3P6t030haRwCWKtbdPlQOG2VDmgchUcU1nHyhfNsY4ng49aqpvY448gQB5UdzZCanokrwbw296DLaiKAAlRzgPysfjt351pCl93ZBD74jweWAUKPX3fsk6AolGmGAyPIDd3wQiBEALCN5kWMFS5d631JALT7FVDUYxLtjIJoPiwEuQfTi2NrRuHuSabQZAkPtRPI8fu7P5GdzXMiShgN0EqvIgU8YQkXXLZAqAGJUaFqM2n4xCKn0cPGPXHMOc9reyAuZC66YlBQZDZD
+  phone-number-id: 1201593306363981
+  api-version: v19.0
+  webhook-verify-token: my_custom_verify_token_123
+  mock: true   # set false when real credentials are configured
+
+logging:
+  level:
+    com.smsportal: DEBUG
+    org.springframework.security: INFO

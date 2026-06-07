@@ -1,0 +1,134 @@
+# application-render.yml
+# Spring Boot profile activated when SPRING_PROFILES_ACTIVE=render
+#
+# Place this at:
+#   smsportal-backend/src/main/resources/application-render.yml
+#
+# Render automatically injects all env vars you set in the dashboard.
+# This file maps those vars to Spring Boot config keys.
+# All sensitive values use ${ENV_VAR} syntax — never hardcoded.
+
+server:
+  port: ${PORT:8080}
+
+spring:
+  # ── Database ──────────────────────────────────────────────────────
+  # Render provides PostgreSQL (not MySQL).
+  # The JDBC URL is auto-injected from the linked database.
+  datasource:
+    url: ${DATABASE_URL}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 5        # Render free DB allows max 5 connections
+      minimum-idle: 1
+      idle-timeout: 300000
+      connection-timeout: 20000
+      leak-detection-threshold: 60000
+
+  jpa:
+    hibernate:
+      ddl-auto: update            # auto-creates tables on first run
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: false
+        jdbc:
+          time_zone: UTC
+
+  # ── Redis ─────────────────────────────────────────────────────────
+  # Render Redis injects REDIS_URL (format: redis://user:pass@host:port)
+  redis:
+    url: ${REDIS_URL}
+    timeout: 3000ms
+    lettuce:
+      pool:
+        max-active: 5
+        max-idle: 3
+        min-idle: 1
+
+  # ── RabbitMQ (CloudAMQP free tier) ────────────────────────────────
+  # Get a free AMQP URL from https://cloudamqp.com (Little Lemur plan)
+  rabbitmq:
+    addresses: ${RABBITMQ_URL}
+    # CloudAMQP URL format: amqps://user:pass@whale.rmq2.cloudamqp.com/vhost
+
+  # ── Email (Gmail SMTP) ────────────────────────────────────────────
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}       # Use Gmail App Password, NOT your real password
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+        connectiontimeout: 5000
+        timeout: 3000
+        writetimeout: 5000
+
+  # ── Multipart upload ─────────────────────────────────────────────
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+# ── JWT ──────────────────────────────────────────────────────────────
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION:86400000}
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION:604800000}
+
+# ── MSG91 SMS Gateway ────────────────────────────────────────────────
+msg91:
+  auth-key: ${MSG91_AUTH_KEY}
+  sender-id: ${MSG91_SENDER_ID:SMSPTL}
+
+# ── Razorpay ─────────────────────────────────────────────────────────
+razorpay:
+  key-id: ${RAZORPAY_KEY_ID}
+  key-secret: ${RAZORPAY_KEY_SECRET}
+
+# ── WhatsApp (Meta Cloud API) ────────────────────────────────────────
+whatsapp:
+  access-token: ${WHATSAPP_ACCESS_TOKEN:mock}
+  phone-number-id: ${WHATSAPP_PHONE_NUMBER_ID:mock}
+  api-version: v19.0
+  webhook-verify-token: ${WHATSAPP_WEBHOOK_VERIFY_TOKEN:changeme}
+  mock: ${WHATSAPP_MOCK:false}
+
+# ── App ──────────────────────────────────────────────────────────────
+app:
+  sms-rate-promotional: 0.15
+  sms-rate-transactional: 0.25
+  sms-rate-otp: 0.20
+  whatsapp-rate-text: 0.40
+  whatsapp-rate-template: 0.55
+  whatsapp-rate-media: 0.60
+  gateway: ${SMS_GATEWAY:msg91}
+  cors-origins: ${CORS_ORIGINS:*}
+  frontend-url: ${FRONTEND_URL:https://smsportal-frontend.onrender.com}
+  name: ${APP_NAME:SMSPortal}
+
+# ── Logging (quieter in production) ─────────────────────────────────
+logging:
+  level:
+    com.smsportal: INFO
+    org.springframework.security: WARN
+    org.hibernate: WARN
+    com.zaxxer.hikari: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# ── Actuator (health check endpoint for Render) ──────────────────────
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
