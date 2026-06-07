@@ -5,7 +5,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/smsportal?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: root
-    password: ****
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
     show-sql: false
 
@@ -34,7 +34,8 @@ spring:
     host: smtp.zoho.in
     port: 587
     username: contact@laptechs.in
-    password: *******
+    password: ${MAIL_PASSWORD
+  }
     properties:
       mail:
         smtp:
@@ -90,7 +91,7 @@ whatsapp:
   phone-number-id: 1201593306363981
   api-version: v19.0
   webhook-verify-token: my_custom_verify_token_123
-  mock: true   # set false when real credentials are configured
+  mock: false   # set false when real credentials are configured
 
 logging:
   level:
