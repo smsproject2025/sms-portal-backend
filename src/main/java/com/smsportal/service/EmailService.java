@@ -18,10 +18,10 @@ public class EmailService {
     @Qualifier("godaddyMailSender")
     private final JavaMailSender godaddyMailSender;
 
-    @Value("${spring.mail.username}")
+    @Value("${spring.mail.username:noreply@smsportal.com}")
     private String fromEmail;
 
-    @Value("${app.frontend-url:http://localhost:4200}")
+    @Value("${app.frontend-url:https://smsportal.onrender.com}")
     private String frontendUrl;
 
     @Value("${app.name:SMSPortal}")

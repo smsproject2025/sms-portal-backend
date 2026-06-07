@@ -36,10 +36,10 @@ public class WalletService {
     private final TransactionRepository transactionRepository;
     private final UserRepository userRepository;
 
-    @Value("${razorpay.key-id}")
+    @Value("${razorpay.key-id:not-configured}")
     private String razorpayKeyId;
 
-    @Value("${razorpay.key-secret}")
+    @Value("${razorpay.key-secret:not-configured}")
     private String razorpayKeySecret;
 
     public WalletDTO getWallet(String email) {

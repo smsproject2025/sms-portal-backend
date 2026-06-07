@@ -13,7 +13,7 @@ import java.util.Map;
 @Slf4j
 public class SmsGatewayService {
 
-    @Value("${msg91.auth-key}")
+    @Value("${msg91.auth-key:not-configured}")
     private String msg91AuthKey;
 
     @Value("${msg91.sender-id}")

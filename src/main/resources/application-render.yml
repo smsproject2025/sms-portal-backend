@@ -52,15 +52,15 @@ spring:
   # ── RabbitMQ (CloudAMQP free tier) ────────────────────────────────
   # Get a free AMQP URL from https://cloudamqp.com (Little Lemur plan)
   rabbitmq:
-    addresses: ${RABBITMQ_URL}
+    addresses: ${RABBITMQ_URL:amqp://guest:guest@localhost}
     # CloudAMQP URL format: amqps://user:pass@whale.rmq2.cloudamqp.com/vhost
 
   # ── Email (Gmail SMTP) ────────────────────────────────────────────
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}       # Use Gmail App Password, NOT your real password
+    username: ${MAIL_USERNAME:noreply@example.com}
+    password: ${MAIL_PASSWORD:not-configured}       # Use Gmail App Password, NOT your real password
     properties:
       mail:
         smtp:
@@ -86,13 +86,13 @@ jwt:
 
 # ── MSG91 SMS Gateway ────────────────────────────────────────────────
 msg91:
-  auth-key: ${MSG91_AUTH_KEY}
+  auth-key: ${MSG91_AUTH_KEY:not-configured}
   sender-id: ${MSG91_SENDER_ID:SMSPTL}
 
 # ── Razorpay ─────────────────────────────────────────────────────────
 razorpay:
-  key-id: ${RAZORPAY_KEY_ID}
-  key-secret: ${RAZORPAY_KEY_SECRET}
+  key-id: ${RAZORPAY_KEY_ID:not-configured}
+  key-secret: ${RAZORPAY_KEY_SECRET:not-configured}
 
 # ── WhatsApp (Meta Cloud API) ────────────────────────────────────────
 whatsapp:
@@ -100,7 +100,7 @@ whatsapp:
   phone-number-id: ${WHATSAPP_PHONE_NUMBER_ID:mock}
   api-version: v19.0
   webhook-verify-token: ${WHATSAPP_WEBHOOK_VERIFY_TOKEN:changeme}
-  mock: ${WHATSAPP_MOCK:false}
+  mock: ${WHATSAPP_MOCK:true}
 
 # ── App ──────────────────────────────────────────────────────────────
 app:

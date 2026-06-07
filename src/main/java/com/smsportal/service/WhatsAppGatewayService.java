@@ -27,16 +27,16 @@ import java.util.Map;
 @Slf4j
 public class WhatsAppGatewayService {
 
-    @Value("${whatsapp.access-token}")
+    @Value("${whatsapp.access-token:mock}")
     private String accessToken;
 
-    @Value("${whatsapp.phone-number-id}")
+    @Value("${whatsapp.phone-number-id:mock}")
     private String phoneNumberId;
 
     @Value("${whatsapp.api-version:v19.0}")
     private String apiVersion;
 
-    @Value("${whatsapp.mock:false}")
+    @Value("${whatsapp.mock:true}")
     private boolean mockMode;
 
     private final RestTemplate restTemplate = new RestTemplate();
