@@ -16,7 +16,9 @@ spring:
   # Render provides PostgreSQL (not MySQL).
   # The JDBC URL is auto-injected from the linked database.
   datasource:
-    url: ${DATABASE_URL}
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 5        # Render free DB allows max 5 connections
